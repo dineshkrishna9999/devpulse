@@ -1,0 +1,39 @@
+# ──────────────────────────────────────────────
+# Poe the Poet — Task Definitions
+# Run tasks with: uv run poe <task>
+# ──────────────────────────────────────────────
+
+[tool.poe.tasks]
+
+# Formatting
+fmt = "ruff format"
+fmt-check = "ruff format --check"
+
+# Linting
+lint = "ruff check ."
+lint-fix = "ruff check . --fix"
+
+# Type Checking
+typecheck-mypy = "mypy src/"
+typecheck-pyright = "pyright"
+typecheck = ["typecheck-mypy", "typecheck-pyright"]
+
+# Testing
+test = "pytest"
+test-v = "pytest -v"
+test-cov = "pytest --cov --cov-report=term-missing --cov-report=html"
+test-fast = "pytest -x -q"              # stop on first failure
+test-parallel = "pytest -n auto"        # parallel with xdist
+
+# Run the app
+run = "python -m devpulse"
+
+# All checks (CI-like)
+[tool.poe.tasks.check]
+sequence = ["fmt-check", "lint", "typecheck-mypy", "test"]
+help = "Run all checks (format, lint, typecheck, test)"
+
+# Clean
+[tool.poe.tasks.clean]
+shell = "rm -rf .mypy_cache .pytest_cache .ruff_cache htmlcov .coverage dist build *.egg-info"
+help = "Remove all build/cache artifacts"

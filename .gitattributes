@@ -1,0 +1,14 @@
+# Auto-detect text files and normalize line endings
+* text=auto eol=lf
+
+# Force batch scripts to use CRLF
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.ico binary
+*.gz binary
+*.zip binary
+*.tar binary
