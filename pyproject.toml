@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
 ]
 dependencies = [
-    "click>=8.1.0",
+    "typer>=0.15.0",
     "rich>=13.0.0",
     "google-adk>=1.23.0",
     "litellm>=1.40.0",
@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [project.scripts]
-devpulse = "devpulse.cli:main"
+devpulse = "devpulse.cli:app"
 
 [project.urls]
 Homepage = "https://github.com/dineshkrishna9999/devpulse"
