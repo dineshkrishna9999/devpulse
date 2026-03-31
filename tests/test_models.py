@@ -1,8 +1,8 @@
-"""Tests for lasttoknow data models."""
+"""Tests for firsttoknow data models."""
 
 from datetime import datetime
 
-from lasttoknow.models import ItemType, TrackedItem
+from firsttoknow.models import ItemType, TrackedItem
 
 
 class TestTrackedItem:

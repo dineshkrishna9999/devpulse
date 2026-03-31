@@ -1,4 +1,4 @@
-"""Tool functions for the LastToKnow agent.
+"""Tool functions for the FirstToKnow agent.
 
 Each method fetches data from an external API and returns a JSON string.
 The agent reads the JSON, reasons about it, and builds its response.
@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 _TIMEOUT = 10
 
 
-class LastToKnowTools:
-    """Tools the LastToKnow agent can call to fetch real-time data."""
+class FirstToKnowTools:
+    """Tools the FirstToKnow agent can call to fetch real-time data."""
 
     def fetch_pypi_releases(self, package_name: str) -> str:
         """Fetch the latest release info for a PyPI package.
@@ -175,7 +175,7 @@ class LastToKnowTools:
             JSON string with a list of posts (title, url, score, comments).
         """
         url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-        headers = {"User-Agent": "LastToKnow/0.1"}
+        headers = {"User-Agent": "FirstToKnow/0.1"}
         try:
             resp = httpx.get(url, headers=headers, params={"limit": limit}, timeout=_TIMEOUT)
             resp.raise_for_status()

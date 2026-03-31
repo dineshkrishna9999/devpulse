@@ -1,6 +1,6 @@
-# 🔔 LastToKnow
+# 🔔 FirstToKnow
 
-### Because being the last to know isn't a personality trait — it's a fixable problem.
+### Because being the first to know isn't luck — it's a system.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -24,17 +24,17 @@ Dependabot bumps versions but doesn't explain why it matters. daily.dev shows ge
 
 ## The Fix
 
-**LastToKnow** is an AI agent that knows your stack, tracks what matters to YOU, and briefs you like a personal tech analyst.
+**FirstToKnow** is an AI agent that knows your stack, tracks what matters to YOU, and briefs you like a personal tech analyst.
 
 ```bash
 # 30 seconds to set up
-uv run lasttoknow scan                          # Auto-detects deps from your project
-uv run lasttoknow track --topic "AI agents"     # Add topics you care about
-uv run lasttoknow brief --model gpt-4o          # Get your personalized briefing
+uv run firsttoknow scan                          # Auto-detects deps from your project
+uv run firsttoknow track --topic "AI agents"     # Add topics you care about
+uv run firsttoknow brief --model gpt-4o          # Get your personalized briefing
 ```
 
 ```
-╭───────────────────────── 🔔 LastToKnow Briefing ──────────────────────────╮
+╭───────────────────────── 🔔 FirstToKnow Briefing ──────────────────────────╮
 │                                                                            │
 │  🔴 CRITICAL — action needed                                              │
 │  ├── litellm 1.41.0 → Breaking: Azure auth flow changed                   │
@@ -53,7 +53,7 @@ uv run lasttoknow brief --model gpt-4o          # Get your personalized briefing
 
 **No dashboards.** No browser tabs. No newsletters you'll never read. Just one command and you're the **first** to know.
 
-## Why LastToKnow > Everything Else
+## Why FirstToKnow > Everything Else
 
 | Tool | What it does | What it doesn't do |
 |------|-------------|-------------------|
@@ -61,52 +61,52 @@ uv run lasttoknow brief --model gpt-4o          # Get your personalized briefing
 | **daily.dev** | Generic news feed | Not personalized to your stack |
 | **GitHub Watch** | Notifications | Drowns you in noise, zero intelligence |
 | **Newsletters** | Curated by someone else | Not YOUR stack, stale by the time you read |
-| **🔔 LastToKnow** | **Knows YOUR stack, fetches real-time data, AI synthesizes and prioritizes** | — |
+| **🔔 FirstToKnow** | **Knows YOUR stack, fetches real-time data, AI synthesizes and prioritizes** | — |
 
 ## Get Started in 60 Seconds
 
 ```bash
 # Install
-git clone https://github.com/dineshkrishna9999/lasttoknow.git
-cd lasttoknow && uv sync
+git clone https://github.com/dineshkrishna9999/firsttoknow.git
+cd firsttoknow && uv sync
 
 # Point it at any LLM (Azure, OpenAI, Gemini, Claude, Ollama)
 echo "OPENAI_API_KEY=sk-..." > .env
-uv run lasttoknow config model gpt-4o
+uv run firsttoknow config model gpt-4o
 
 # Tell it what you care about
-uv run lasttoknow track litellm                  # PyPI package
-uv run lasttoknow track --github BerriAI/litellm # GitHub repo
-uv run lasttoknow track --topic "AI agents"      # Broad topic
-uv run lasttoknow scan                           # Or just auto-detect everything
+uv run firsttoknow track litellm                  # PyPI package
+uv run firsttoknow track --github BerriAI/litellm # GitHub repo
+uv run firsttoknow track --topic "AI agents"      # Broad topic
+uv run firsttoknow scan                           # Or just auto-detect everything
 
 # Get briefed
-uv run lasttoknow brief
+uv run firsttoknow brief
 ```
 
-That's it. You're no longer the last to know.
+That's it. You're the first to know.
 
 ## All Commands
 
 ```bash
 # Track / Untrack
-uv run lasttoknow track <name>                 # Track a PyPI package
-uv run lasttoknow track --github owner/repo    # Track a GitHub repo
-uv run lasttoknow track --topic "AI agents"    # Track a topic
-uv run lasttoknow track litellm --version 1.40 # Track with current version
-uv run lasttoknow scan                         # Auto-detect from pyproject.toml
-uv run lasttoknow untrack <name>               # Stop tracking
+uv run firsttoknow track <name>                 # Track a PyPI package
+uv run firsttoknow track --github owner/repo    # Track a GitHub repo
+uv run firsttoknow track --topic "AI agents"    # Track a topic
+uv run firsttoknow track litellm --version 1.40 # Track with current version
+uv run firsttoknow scan                         # Auto-detect from pyproject.toml
+uv run firsttoknow untrack <name>               # Stop tracking
 
 # Briefings
-uv run lasttoknow brief                        # Get your AI briefing
-uv run lasttoknow brief --model azure/gpt-4.1  # Use a specific model
-uv run lasttoknow brief --raw                  # Raw text, no formatting
+uv run firsttoknow brief                        # Get your AI briefing
+uv run firsttoknow brief --model azure/gpt-4.1  # Use a specific model
+uv run firsttoknow brief --raw                  # Raw text, no formatting
 
 # Manage
-uv run lasttoknow list                         # See what you're tracking
-uv run lasttoknow status                       # Full overview
-uv run lasttoknow config model <model>         # Set default LLM
-uv run lasttoknow config show                  # Show settings
+uv run firsttoknow list                         # See what you're tracking
+uv run firsttoknow status                       # Full overview
+uv run firsttoknow config model <model>         # Set default LLM
+uv run firsttoknow config show                  # Show settings
 ```
 
 ## Works With Any LLM
@@ -124,11 +124,11 @@ Powered by [LiteLLM](https://github.com/BerriAI/litellm) — so you're not locke
 ## How It Works Under the Hood
 
 ```
-You run: lasttoknow brief
+You run: firsttoknow brief
               │
               ▼
    ┌─────────────────────┐
-   │   LastToKnow CLI    │  Reads your tracked items from ~/.lasttoknow/
+   │   FirstToKnow CLI   │  Reads your tracked items from ~/.firsttoknow/
    └──────────┬──────────┘
               │
               ▼
@@ -162,8 +162,8 @@ The AI **decides** which tools to call — you don't hardcode the flow. You just
 ## Development
 
 ```bash
-git clone https://github.com/dineshkrishna9999/lasttoknow.git
-cd lasttoknow && uv sync
+git clone https://github.com/dineshkrishna9999/firsttoknow.git
+cd firsttoknow && uv sync
 
 uv run poe check        # Run ALL checks (format, lint, typecheck, test)
 uv run poe test         # Just tests
@@ -173,15 +173,15 @@ uv run poe fmt          # Format code
 ### Project Structure
 
 ```
-src/lasttoknow/
+src/firsttoknow/
 ├── cli.py              # CLI commands (Typer)
-├── config.py           # Config & persistence (~/.lasttoknow/)
+├── config.py           # Config & persistence (~/.firsttoknow/)
 ├── models.py           # Data models
 ├── renderer.py         # Rich terminal output
 ├── scanner.py          # Dependency scanner
 └── agents/
     ├── agent.py        # ADK agent + runner
-    ├── _tools.py       # API fetchers (PyPI, GitHub, HN)
+    ├── _tools.py       # API fetchers (PyPI, GitHub, HN, Dev.to, Reddit)
     └── instructions/
         └── briefing.py # System prompt
 ```
@@ -193,6 +193,6 @@ src/lasttoknow/
 ---
 
 <p align="center">
-  <b>Stop being the last to know.</b><br>
-  <a href="https://github.com/dineshkrishna9999/lasttoknow">⭐ Star this repo</a> if you've ever found out about a breaking change from a colleague.
+  <b>Stop being the last to know. Start being the first.</b><br>
+  <a href="https://github.com/dineshkrishna9999/firsttoknow">⭐ Star this repo</a> if you've ever found out about a breaking change from a colleague.
 </p>

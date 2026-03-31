@@ -1,17 +1,17 @@
-"""LastToKnow CLI — your AI-powered tech radar from the terminal.
+"""FirstToKnow CLI — your AI-powered tech radar from the terminal.
 
 Built with Typer — function arguments become CLI arguments automatically.
 Type hints drive the parsing, no decorators needed.
 
 Commands:
-    lasttoknow track litellm              Track a PyPI package
-    lasttoknow track --github BerriAI/x   Track a GitHub repo
-    lasttoknow track --topic "AI agents"  Track a topic
-    lasttoknow untrack litellm            Stop tracking
-    lasttoknow list                       Show tracked items
-    lasttoknow brief                      Get your AI briefing
-    lasttoknow config model gpt-4o        Set default model
-    lasttoknow config show                Show settings
+    firsttoknow track litellm              Track a PyPI package
+    firsttoknow track --github BerriAI/x   Track a GitHub repo
+    firsttoknow track --topic "AI agents"  Track a topic
+    firsttoknow untrack litellm            Stop tracking
+    firsttoknow list                       Show tracked items
+    firsttoknow brief                      Get your AI briefing
+    firsttoknow config model gpt-4o        Set default model
+    firsttoknow config show                Show settings
 """
 
 from __future__ import annotations
@@ -22,10 +22,10 @@ from typing import Annotated
 import typer
 from dotenv import load_dotenv
 
-from lasttoknow import __version__
-from lasttoknow.config import LastToKnowConfig
-from lasttoknow.models import ItemType
-from lasttoknow.renderer import (
+from firsttoknow import __version__
+from firsttoknow.config import FirstToKnowConfig
+from firsttoknow.models import ItemType
+from firsttoknow.renderer import (
     render_briefing,
     render_error,
     render_scan_results,
@@ -39,26 +39,26 @@ from lasttoknow.renderer import (
 # App setup
 # ──────────────────────────────────────────────
 
-# Load .env file if present (API keys, LASTTOKNOW_MODEL, etc.)
+# Load .env file if present (API keys, FIRSTTOKNOW_MODEL, etc.)
 load_dotenv()
 
 app = typer.Typer(
-    name="lasttoknow",
-    help="🔔 LastToKnow — Never miss what matters in tech.\n\nTrack packages, releases, and trends. Get briefed like a CTO.",
+    name="firsttoknow",
+    help="🔔 FirstToKnow — Never miss what matters in tech.\n\nTrack packages, releases, and trends. Get briefed like a CTO.",
     no_args_is_help=True,
 )
 
-# Sub-app for "lasttoknow config ..."
-config_app = typer.Typer(help="Manage LastToKnow settings.")
+# Sub-app for "firsttoknow config ..."
+config_app = typer.Typer(help="Manage FirstToKnow settings.")
 app.add_typer(config_app, name="config")
 
 # Shared config instance.
-_config = LastToKnowConfig()
+_config = FirstToKnowConfig()
 
 
 def _version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"lasttoknow {__version__}")
+        typer.echo(f"firsttoknow {__version__}")
         raise typer.Exit
 
 
@@ -68,17 +68,17 @@ def _main(
         bool, typer.Option("--version", "-v", help="Show version and exit.", callback=_version_callback)
     ] = False,
 ) -> None:
-    """🔔 LastToKnow — Never miss what matters in tech."""
+    """🔔 FirstToKnow — Never miss what matters in tech."""
 
 
 def _resolve_model(model_override: str | None) -> str:
     """Figure out which LLM model to use (flag → env var → config → error)."""
-    model = model_override or os.environ.get("LASTTOKNOW_MODEL") or _config.model
+    model = model_override or os.environ.get("FIRSTTOKNOW_MODEL") or _config.model
     if not model:
         render_error(
             "No model configured. Set one with:\n"
-            "  lasttoknow config model azure/gpt-4.1\n"
-            "  or set LASTTOKNOW_MODEL env var\n"
+            "  firsttoknow config model azure/gpt-4.1\n"
+            "  or set FIRSTTOKNOW_MODEL env var\n"
             "  or pass --model flag"
         )
         raise typer.Exit(1)
@@ -133,7 +133,7 @@ def scan(
     """Auto-detect and track dependencies from pyproject.toml or requirements.txt."""
     from pathlib import Path
 
-    from lasttoknow.scanner import scan_project
+    from firsttoknow.scanner import scan_project
 
     project_path = Path(path).resolve()
     deps = scan_project(project_path)
@@ -199,7 +199,7 @@ def brief(
     message = " ".join(parts)
 
     # Import here to avoid loading ADK/LiteLLM on every CLI invocation
-    from lasttoknow.agents.agent import run_agent
+    from firsttoknow.agents.agent import run_agent
 
     try:
         response = run_agent(model=resolved_model, message=message)
@@ -251,6 +251,6 @@ def config_show() -> None:
 
 @app.command()
 def status() -> None:
-    """Show LastToKnow status and tracked items."""
+    """Show FirstToKnow status and tracked items."""
     config_show()
     render_tracked_items(_config.tracked_items)

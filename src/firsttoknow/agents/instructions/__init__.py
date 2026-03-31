@@ -1,4 +1,4 @@
-"""Instruction constants for LastToKnow agents."""
+"""Instruction constants for FirstToKnow agents."""
 
 from .briefing import BRIEFING_INSTRUCTION
 

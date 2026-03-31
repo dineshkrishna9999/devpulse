@@ -1,4 +1,4 @@
-"""Data models for LastToKnow."""
+"""Data models for FirstToKnow."""
 
 from __future__ import annotations
 

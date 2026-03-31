@@ -1,4 +1,4 @@
-"""Tests for the LastToKnow agent tool functions.
+"""Tests for the FirstToKnow agent tool functions.
 
 Each tool calls an external API. We mock httpx.get so tests are
 fast, offline, and deterministic.
@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock, patch
 
-from lasttoknow.agents._tools import LastToKnowTools
+from firsttoknow.agents._tools import FirstToKnowTools
 
 
 def _mock_response(data: dict | list) -> MagicMock:  # type: ignore[type-arg]
@@ -24,7 +24,7 @@ class TestFetchPypiReleases:
     """Tests for the PyPI release fetcher."""
 
     def setup_method(self) -> None:
-        self.tools = LastToKnowTools()
+        self.tools = FirstToKnowTools()
 
     def test_successful_fetch(self) -> None:
         mock_data = {
@@ -37,7 +37,7 @@ class TestFetchPypiReleases:
             },
             "releases": {"1.41.0": [], "1.40.0": [], "1.39.0": []},
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_pypi_releases("litellm"))
 
         assert result["package"] == "litellm"
@@ -46,7 +46,7 @@ class TestFetchPypiReleases:
         assert "1.41.0" in result["recent_versions"]
 
     def test_returns_error_on_failure(self) -> None:
-        with patch("lasttoknow.agents._tools.httpx.get", side_effect=Exception("Connection failed")):
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("Connection failed")):
             result = json.loads(self.tools.fetch_pypi_releases("nonexistent-pkg"))
 
         assert "error" in result
@@ -64,7 +64,7 @@ class TestFetchPypiReleases:
             },
             "releases": releases,
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_pypi_releases("test-pkg"))
 
         assert len(result["recent_versions"]) == 5
@@ -74,7 +74,7 @@ class TestFetchGithubTrending:
     """Tests for the GitHub trending fetcher."""
 
     def setup_method(self) -> None:
-        self.tools = LastToKnowTools()
+        self.tools = FirstToKnowTools()
 
     def test_successful_fetch(self) -> None:
         mock_data = {
@@ -88,7 +88,7 @@ class TestFetchGithubTrending:
                 },
             ],
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_github_trending("python", "weekly"))
 
         assert result["language"] == "python"
@@ -99,7 +99,7 @@ class TestFetchGithubTrending:
 
     def test_daily_since(self) -> None:
         mock_data = {"items": []}
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
             self.tools.fetch_github_trending("python", "daily")
 
         call_kwargs = mock_get.call_args
@@ -108,7 +108,7 @@ class TestFetchGithubTrending:
 
     def test_monthly_since(self) -> None:
         mock_data = {"items": []}
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
             self.tools.fetch_github_trending("javascript", "monthly")
 
         call_kwargs = mock_get.call_args
@@ -116,7 +116,7 @@ class TestFetchGithubTrending:
         assert "javascript" in query["q"]
 
     def test_returns_error_on_failure(self) -> None:
-        with patch("lasttoknow.agents._tools.httpx.get", side_effect=Exception("Rate limited")):
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("Rate limited")):
             result = json.loads(self.tools.fetch_github_trending())
 
         assert "error" in result
@@ -133,7 +133,7 @@ class TestFetchGithubTrending:
             for i in range(15)
         ]
         mock_data = {"items": items}
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_github_trending())
 
         assert len(result["trending"]) == 10
@@ -143,7 +143,7 @@ class TestFetchHackernewsTop:
     """Tests for the Hacker News fetcher."""
 
     def setup_method(self) -> None:
-        self.tools = LastToKnowTools()
+        self.tools = FirstToKnowTools()
 
     def test_successful_fetch(self) -> None:
         mock_data = {
@@ -157,7 +157,7 @@ class TestFetchHackernewsTop:
                 },
             ],
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_hackernews_top("AI"))
 
         assert result["query"] == "AI"
@@ -176,7 +176,7 @@ class TestFetchHackernewsTop:
                 },
             ],
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_hackernews_top("AI"))
 
         assert "news.ycombinator.com" in result["stories"][0]["url"]
@@ -184,7 +184,7 @@ class TestFetchHackernewsTop:
 
     def test_custom_limit(self) -> None:
         mock_data = {"hits": []}
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
             self.tools.fetch_hackernews_top("python", limit=5)
 
         call_kwargs = mock_get.call_args
@@ -192,7 +192,7 @@ class TestFetchHackernewsTop:
         assert params["hitsPerPage"] == 5
 
     def test_returns_error_on_failure(self) -> None:
-        with patch("lasttoknow.agents._tools.httpx.get", side_effect=Exception("Timeout")):
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("Timeout")):
             result = json.loads(self.tools.fetch_hackernews_top())
 
         assert "error" in result
@@ -203,7 +203,7 @@ class TestFetchDevtoArticles:
     """Tests for the Dev.to article fetcher."""
 
     def setup_method(self) -> None:
-        self.tools = LastToKnowTools()
+        self.tools = FirstToKnowTools()
 
     def test_successful_fetch(self) -> None:
         mock_data = [
@@ -216,7 +216,7 @@ class TestFetchDevtoArticles:
                 "user": {"username": "alice"},
             },
         ]
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_devto_articles("python"))
 
         assert result["tag"] == "python"
@@ -227,7 +227,7 @@ class TestFetchDevtoArticles:
 
     def test_custom_tag_and_limit(self) -> None:
         mock_data: list[dict[str, object]] = []
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
             self.tools.fetch_devto_articles("ai", limit=5)
 
         call_kwargs = mock_get.call_args
@@ -236,7 +236,7 @@ class TestFetchDevtoArticles:
         assert params["per_page"] == 5
 
     def test_returns_error_on_failure(self) -> None:
-        with patch("lasttoknow.agents._tools.httpx.get", side_effect=Exception("Service down")):
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("Service down")):
             result = json.loads(self.tools.fetch_devto_articles())
 
         assert "error" in result
@@ -249,7 +249,7 @@ class TestFetchDevtoArticles:
                 "url": "https://dev.to/bob/minimal",
             },
         ]
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_devto_articles())
 
         assert result["articles"][0]["reactions"] == 0
@@ -261,7 +261,7 @@ class TestFetchRedditPosts:
     """Tests for the Reddit post fetcher."""
 
     def setup_method(self) -> None:
-        self.tools = LastToKnowTools()
+        self.tools = FirstToKnowTools()
 
     def test_successful_fetch(self) -> None:
         mock_data = {
@@ -280,7 +280,7 @@ class TestFetchRedditPosts:
                 ],
             },
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_reddit_posts("Python"))
 
         assert result["subreddit"] == "Python"
@@ -316,7 +316,7 @@ class TestFetchRedditPosts:
                 ],
             },
         }
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)):
             result = json.loads(self.tools.fetch_reddit_posts("Python"))
 
         assert len(result["posts"]) == 1
@@ -324,14 +324,14 @@ class TestFetchRedditPosts:
 
     def test_custom_subreddit(self) -> None:
         mock_data = {"data": {"children": []}}
-        with patch("lasttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
+        with patch("firsttoknow.agents._tools.httpx.get", return_value=_mock_response(mock_data)) as mock_get:
             self.tools.fetch_reddit_posts("MachineLearning", limit=5)
 
         call_url = mock_get.call_args[0][0]
         assert "MachineLearning" in call_url
 
     def test_returns_error_on_failure(self) -> None:
-        with patch("lasttoknow.agents._tools.httpx.get", side_effect=Exception("Rate limited")):
+        with patch("firsttoknow.agents._tools.httpx.get", side_effect=Exception("Rate limited")):
             result = json.loads(self.tools.fetch_reddit_posts())
 
         assert "error" in result
@@ -342,6 +342,6 @@ class TestGetTools:
     """Tests for the get_tools method."""
 
     def test_returns_five_tools(self) -> None:
-        tools = LastToKnowTools()
+        tools = FirstToKnowTools()
         function_tools = tools.get_tools()
         assert len(function_tools) == 5

@@ -1,4 +1,4 @@
-"""Dependency scanner for LastToKnow.
+"""Dependency scanner for FirstToKnow.
 
 Reads pyproject.toml or requirements.txt from a project directory
 and extracts package names + pinned versions.

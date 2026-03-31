@@ -1,4 +1,4 @@
-"""LastToKnow agent — the core AI brain."""
+"""FirstToKnow agent — the core AI brain."""
 
 from __future__ import annotations
 
@@ -13,13 +13,13 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types as genai_types
 
-from ._tools import LastToKnowTools
+from ._tools import FirstToKnowTools
 from .instructions import BRIEFING_INSTRUCTION
 
 logger = logging.getLogger(__name__)
 
 
-class LastToKnowAgent(LlmAgent):
+class FirstToKnowAgent(LlmAgent):
     """AI-powered tech radar agent.
 
     Uses Google ADK with LiteLLM so any LLM provider works
@@ -27,14 +27,14 @@ class LastToKnowAgent(LlmAgent):
     """
 
     def __init__(self, llm: LiteLlm) -> None:
-        self._lasttoknow_tools = LastToKnowTools()
+        self._firsttoknow_tools = FirstToKnowTools()
 
         super().__init__(
-            name="lasttoknow_agent",
+            name="firsttoknow_agent",
             description="AI-powered tech radar that tracks packages, releases, and trends.",
             model=llm,
             instruction=BRIEFING_INSTRUCTION,
-            tools=self._lasttoknow_tools.get_tools(),  # type: ignore[arg-type]
+            tools=self._firsttoknow_tools.get_tools(),  # type: ignore[arg-type]
         )
 
 
@@ -60,7 +60,7 @@ def _restore_output() -> None:
 
 
 def run_agent(model: str, message: str) -> str:
-    """Run the LastToKnow agent and return its response.
+    """Run the FirstToKnow agent and return its response.
 
     Args:
         model: LiteLLM model string (e.g. "azure/gpt-4.1", "gpt-4o").
@@ -83,13 +83,13 @@ def run_agent(model: str, message: str) -> str:
 def _run_agent_inner(model: str, message: str) -> str:
     """Inner agent runner (called with output suppressed)."""
     llm = LiteLlm(model=model)
-    agent = LastToKnowAgent(llm=llm)
+    agent = FirstToKnowAgent(llm=llm)
 
     session_service = InMemorySessionService()  # type: ignore[no-untyped-call]
     runner = Runner(
         agent=agent,
         session_service=session_service,
-        app_name="lasttoknow",
+        app_name="firsttoknow",
         auto_create_session=True,
     )
 

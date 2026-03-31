@@ -1,6 +1,6 @@
-"""Configuration management for LastToKnow.
+"""Configuration management for FirstToKnow.
 
-Stores tracked items and settings in ~/.lasttoknow/ as JSON files.
+Stores tracked items and settings in ~/.firsttoknow/ as JSON files.
 """
 
 from __future__ import annotations
@@ -11,17 +11,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from lasttoknow.models import ItemType, TrackedItem
+from firsttoknow.models import ItemType, TrackedItem
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_DIR = Path.home() / ".lasttoknow"
+DEFAULT_DIR = Path.home() / ".firsttoknow"
 
 
-class LastToKnowConfig:
+class FirstToKnowConfig:
     """Manages tracked items and settings.
 
-    Everything is saved as JSON in ~/.lasttoknow/.
+    Everything is saved as JSON in ~/.firsttoknow/.
     """
 
     def __init__(self, config_dir: Path | None = None) -> None:

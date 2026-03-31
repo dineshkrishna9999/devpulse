@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-03-31
+
+### Changed
+
+- **Renamed project from LastToKnow to FirstToKnow** — aspirational > self-deprecating
+- Renamed all imports, CLI commands, config dir (`~/.firsttoknow/`), env var (`FIRSTTOKNOW_MODEL`)
+- Agent now produces real summaries (2-3 sentences per item) instead of just headlines
+- Every item includes a `[Read more]` link for optional deep-dive
+
 ## [0.2.0] - 2026-03-31
 
 ### Added
@@ -30,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - 3 tool functions: PyPI releases, GitHub trending, Hacker News top stories
 - Dependency scanner: auto-detect from `pyproject.toml` / `requirements.txt`
 - Rich terminal output: panels, tables, colored text
-- Config management with JSON persistence (`~/.lasttoknow/`)
+- Config management with JSON persistence (`~/.firsttoknow/`)
 - `.env` support via python-dotenv for API keys
 - Works with any LLM provider: Azure OpenAI, OpenAI, Gemini, Claude, Ollama
 - System prompt with priority levels: 🔴 Critical / 🟡 Important / 🟢 FYI
