@@ -23,8 +23,6 @@
 
 > **🔥 Real story caught by FirstToKnow:** The briefing below is real — FirstToKnow surfaced that **Claude Code's source code was accidentally exposed via a `.map` file in their npm registry** (1,883 pts on HN) alongside **5 Express CVEs** and trending repos like `openai/codex-plugin-cc` — all in one command, before most developers even heard about it. That's the point.
 >
-> <img src="examples/image.png" alt="FirstToKnow real briefing output" width="600">
-
 ---
 
 ## The Problem
@@ -139,6 +137,12 @@ uv run firsttoknow scan                           # Or just auto-detect everythi
 # Get briefed
 uv run firsttoknow brief
 ```
+
+<p align="center">
+  <img src="examples/status_scan_example.png" alt="FirstToKnow scan and status commands — auto-detect dependencies and track them" width="650">
+</p>
+
+<p align="center"><i><code>scan</code> auto-detects your dependencies, <code>status</code> shows everything you're tracking at a glance.</i></p>
 
 That's it. You're the first to know.
 
