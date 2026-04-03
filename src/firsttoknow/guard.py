@@ -204,9 +204,7 @@ def scan_committed_deps(path: Path) -> dict[str, ScannedDep]:
             # Why? Our scanners expect file paths, not strings.
             # We COULD refactor them to accept strings, but that's a
             # bigger change. For now, temp file is simple and works.
-            with tempfile.NamedTemporaryFile(
-                mode="w", suffix=filename, delete=False
-            ) as tmp:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=filename, delete=False) as tmp:
                 tmp.write(result.stdout)
                 tmp_path = Path(tmp.name)
 
@@ -255,9 +253,7 @@ def find_new_deps(path: Path) -> list[ScannedDep]:
 # make the same HTTP calls but return structured Python objects.
 
 
-def check_vulnerabilities(
-    package_name: str, ecosystem: str = "pypi", version: str | None = None
-) -> list[GuardFinding]:
+def check_vulnerabilities(package_name: str, ecosystem: str = "pypi", version: str | None = None) -> list[GuardFinding]:
     """Check a single package for known CVEs via OSV.dev.
 
     Key improvement over a naive approach:

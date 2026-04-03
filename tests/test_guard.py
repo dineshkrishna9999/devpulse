@@ -188,9 +188,7 @@ class TestFindNewDeps:
 
     @patch("firsttoknow.guard.scan_committed_deps")
     @patch("firsttoknow.guard.scan_current_deps")
-    def test_all_new_in_fresh_project(
-        self, mock_current: MagicMock, mock_committed: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_all_new_in_fresh_project(self, mock_current: MagicMock, mock_committed: MagicMock, tmp_path: Path) -> None:
         """In a brand new project (no previous commit), everything is new."""
         mock_current.return_value = {
             "requests": ScannedDep("requests", "2.31.0"),
@@ -259,8 +257,20 @@ class TestCheckVulnerabilities:
             json=MagicMock(
                 return_value={
                     "vulns": [
-                        {"id": "GHSA-1", "aliases": ["CVE-2024-001"], "summary": "bug 1", "severity": [], "references": []},
-                        {"id": "GHSA-2", "aliases": ["CVE-2024-002"], "summary": "bug 2", "severity": [], "references": []},
+                        {
+                            "id": "GHSA-1",
+                            "aliases": ["CVE-2024-001"],
+                            "summary": "bug 1",
+                            "severity": [],
+                            "references": [],
+                        },
+                        {
+                            "id": "GHSA-2",
+                            "aliases": ["CVE-2024-002"],
+                            "summary": "bug 2",
+                            "severity": [],
+                            "references": [],
+                        },
                     ]
                 }
             ),
@@ -601,12 +611,14 @@ class TestCheckLicenseChange:
     @patch("firsttoknow.agents._tools.FirstToKnowTools.check_license_change")
     def test_no_change(self, mock_check: MagicMock) -> None:
         """If license didn't change, return empty list."""
-        mock_check.return_value = json.dumps({
-            "package": "requests",
-            "license_changed": False,
-            "latest_license": "Apache-2.0",
-            "previous_license": "Apache-2.0",
-        })
+        mock_check.return_value = json.dumps(
+            {
+                "package": "requests",
+                "license_changed": False,
+                "latest_license": "Apache-2.0",
+                "previous_license": "Apache-2.0",
+            }
+        )
 
         findings = check_license_change("requests", "pypi")
         assert findings == []
@@ -614,14 +626,16 @@ class TestCheckLicenseChange:
     @patch("firsttoknow.agents._tools.FirstToKnowTools.check_license_change")
     def test_license_changed(self, mock_check: MagicMock) -> None:
         """If license changed, return a CRITICAL finding."""
-        mock_check.return_value = json.dumps({
-            "package": "redis",
-            "license_changed": True,
-            "latest_version": "5.0",
-            "latest_license": "SSPL",
-            "previous_version": "4.0",
-            "previous_license": "BSD-3-Clause",
-        })
+        mock_check.return_value = json.dumps(
+            {
+                "package": "redis",
+                "license_changed": True,
+                "latest_version": "5.0",
+                "latest_license": "SSPL",
+                "previous_version": "4.0",
+                "previous_license": "BSD-3-Clause",
+            }
+        )
 
         findings = check_license_change("redis", "pypi")
         assert len(findings) == 1
@@ -662,7 +676,9 @@ class TestRunGuard:
         """New dep with no issues → report passes."""
         mock_find.return_value = [ScannedDep("flask", "3.0.0")]
         mock_vulns.return_value = [
-            GuardFinding(package="flask", ecosystem="pypi", severity=Severity.INFO, title="flask: no known vulnerabilities")
+            GuardFinding(
+                package="flask", ecosystem="pypi", severity=Severity.INFO, title="flask: no known vulnerabilities"
+            )
         ]
         mock_license.return_value = []
 
@@ -679,8 +695,11 @@ class TestRunGuard:
         mock_find.return_value = [ScannedDep("bad-pkg", "1.0.0")]
         mock_vulns.return_value = [
             GuardFinding(
-                package="bad-pkg", ecosystem="pypi", severity=Severity.CRITICAL,
-                title="bad-pkg: CVE-2024-9999", details="Remote code execution",
+                package="bad-pkg",
+                ecosystem="pypi",
+                severity=Severity.CRITICAL,
+                title="bad-pkg: CVE-2024-9999",
+                details="Remote code execution",
             )
         ]
         mock_license.return_value = []

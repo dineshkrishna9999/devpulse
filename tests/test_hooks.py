@@ -57,8 +57,10 @@ class TestHooksMain:
         mock_guard.return_value = GuardReport(
             findings=[
                 GuardFinding(
-                    package="bad-pkg", ecosystem="pypi",
-                    severity=Severity.CRITICAL, title="CVE found",
+                    package="bad-pkg",
+                    ecosystem="pypi",
+                    severity=Severity.CRITICAL,
+                    title="CVE found",
                 ),
             ]
         )
@@ -78,8 +80,10 @@ class TestHooksMain:
         mock_guard.return_value = GuardReport(
             findings=[
                 GuardFinding(
-                    package="dependencies", ecosystem="—",
-                    severity=Severity.INFO, title="No new dependencies detected",
+                    package="dependencies",
+                    ecosystem="—",
+                    severity=Severity.INFO,
+                    title="No new dependencies detected",
                 ),
             ]
         )
@@ -105,7 +109,9 @@ class TestGuardInit:
         """Should append the guard hook config to .pre-commit-config.yaml."""
         # Create a minimal pre-commit config
         config_file = tmp_path / ".pre-commit-config.yaml"
-        config_file.write_text("repos:\n  - repo: https://github.com/pre-commit/pre-commit-hooks\n    rev: v5.0.0\n    hooks:\n      - id: check-ast\n")
+        config_file.write_text(
+            "repos:\n  - repo: https://github.com/pre-commit/pre-commit-hooks\n    rev: v5.0.0\n    hooks:\n      - id: check-ast\n"
+        )
 
         # Mock pre-commit install succeeding
         mock_run.return_value = MagicMock(returncode=0, stderr="")

@@ -195,9 +195,7 @@ def render_guard_report(report: GuardReport) -> None:
     }
 
     for finding in report.findings:
-        icon, color, label = severity_styles.get(
-            finding.severity, ("❓", "white", "UNKNOWN")
-        )
+        icon, color, label = severity_styles.get(finding.severity, ("❓", "white", "UNKNOWN"))
 
         # Line 1: icon + package + severity label
         console.print(f"  {icon} [bold]{finding.package}[/bold]  [{color}]{label}[/{color}]")
@@ -220,7 +218,9 @@ def render_guard_report(report: GuardReport) -> None:
     if report.critical_count:
         parts.append(f"[bold red]{report.critical_count} critical[/bold red]")
     if report.warning_count:
-        parts.append(f"[bold yellow]{report.warning_count} warning{'s' if report.warning_count != 1 else ''}[/bold yellow]")
+        parts.append(
+            f"[bold yellow]{report.warning_count} warning{'s' if report.warning_count != 1 else ''}[/bold yellow]"
+        )
     if report.info_count:
         parts.append(f"[bold green]{report.info_count} passed[/bold green]")
 
