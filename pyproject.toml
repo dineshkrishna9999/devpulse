@@ -47,6 +47,7 @@ dependencies = [
 
 [project.scripts]
 firsttoknow = "firsttoknow.cli:app"
+firsttoknow-guard = "firsttoknow.hooks:main"
 
 [project.urls]
 Homepage = "https://github.com/dineshkrishna9999/firsttoknow"

@@ -26,3 +26,16 @@ repos:
     rev: 0.9.22
     hooks:
       - id: uv-lock
+
+  # FirstToKnow Guard — checks new dependencies for CVEs and license changes
+  # Runs on pre-push (not pre-commit) because it hits the network (OSV API)
+  # and we don't want to slow down every commit, only pushes.
+  - repo: local
+    hooks:
+      - id: firsttoknow-guard
+        name: FirstToKnow Guard (dependency security)
+        entry: firsttoknow-guard
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true

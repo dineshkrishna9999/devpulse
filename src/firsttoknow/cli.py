@@ -19,6 +19,7 @@ Commands:
 from __future__ import annotations
 
 import os
+import subprocess
 from typing import Annotated
 
 import typer
@@ -250,6 +251,7 @@ def brief(
 @app.command()
 def guard(
     path: Annotated[str, typer.Argument(help="Path to project directory (default: current dir).")] = ".",
+    init: Annotated[bool, typer.Option("--init", help="Install guard as a pre-push git hook.")] = False,
 ) -> None:
     """Scan your uncommitted changes for dependency risks before pushing.
 
@@ -258,8 +260,13 @@ def guard(
     - Known security vulnerabilities (CVEs via OSV.dev)
     - License changes between versions
 
+    Use --init to install as an automatic pre-push hook.
     Exit code 0 = all clear, exit code 1 = critical issues found.
     """
+    if init:
+        _install_guard_hook(path)
+        return
+
     from pathlib import Path
 
     from firsttoknow.guard import run_guard
@@ -279,6 +286,85 @@ def guard(
     # tells git to ABORT the push. This is how we block bad code.
     if not report.passed:
         raise typer.Exit(1)
+
+
+def _install_guard_hook(path: str) -> None:
+    """Install FirstToKnow Guard as a pre-push hook via pre-commit.
+
+    Why pre-commit instead of writing .git/hooks/pre-push directly?
+    ───────────────────────────────────────────────────────────────
+    1. Coexistence: raw .git/hooks/ only allows ONE script per hook.
+       pre-commit lets multiple hooks share the same stage.
+    2. Cross-platform: shell scripts don't work on Windows.
+       pre-commit handles Windows/macOS/Linux.
+    3. Idempotent: pre-commit won't break if you run init twice.
+    4. Standard: it's what the ecosystem uses (ruff, mypy, black).
+
+    The trade-off? Requires pre-commit to be installed. But if you're
+    using firsttoknow, you're a developer who likely has it already.
+    """
+    from pathlib import Path
+
+    project_path = Path(path).resolve()
+    config_file = project_path / ".pre-commit-config.yaml"
+
+    # ── Step 1: Check if .pre-commit-config.yaml exists ──────────
+    if not config_file.exists():
+        render_warning(
+            "No .pre-commit-config.yaml found.\n"
+            "  Create one first, or run: pre-commit sample-config > .pre-commit-config.yaml"
+        )
+        raise typer.Exit(1)
+
+    # ── Step 2: Check if guard hook is already configured ────────
+    config_text = config_file.read_text()
+    if "firsttoknow-guard" in config_text:
+        render_success("Guard hook is already configured in .pre-commit-config.yaml")
+    else:
+        # Append the local hook config
+        hook_config = (
+            "\n"
+            "  # FirstToKnow Guard — checks new dependencies for CVEs and license changes\n"
+            "  - repo: local\n"
+            "    hooks:\n"
+            "      - id: firsttoknow-guard\n"
+            "        name: FirstToKnow Guard (dependency security)\n"
+            "        entry: firsttoknow-guard\n"
+            "        language: system\n"
+            "        stages: [pre-push]\n"
+            "        pass_filenames: false\n"
+            "        always_run: true\n"
+        )
+        config_file.write_text(config_text + hook_config)
+        render_success("Added guard hook to .pre-commit-config.yaml")
+
+    # ── Step 3: Install the pre-push hook ────────────────────────
+    try:
+        result = subprocess.run(
+            ["pre-commit", "install", "--hook-type", "pre-push"],  # noqa: S607
+            cwd=project_path,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode == 0:
+            render_success("Pre-push hook installed")
+        else:
+            render_warning(f"pre-commit install failed: {result.stderr.strip()}")
+            render_warning("You can install manually: pre-commit install --hook-type pre-push")
+    except FileNotFoundError:
+        render_warning(
+            "pre-commit not found. Install it first:\n"
+            "  pip install pre-commit\n"
+            "Then run: pre-commit install --hook-type pre-push"
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        render_warning(f"Could not run pre-commit: {exc}")
+
+    render_success(
+        "\n  Guard will now run automatically before every [bold]git push[/bold].\n"
+        "  To bypass (emergency): git push --no-verify"
+    )
 
 
 # ──────────────────────────────────────────────
