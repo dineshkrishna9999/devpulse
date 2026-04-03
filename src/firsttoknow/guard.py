@@ -32,6 +32,7 @@ import httpx
 import litellm
 
 from firsttoknow.models import GuardFinding, GuardReport, Severity
+from firsttoknow.typosquat import check_typosquat
 from firsttoknow.scanner import (
     ScannedDep,
     scan_package_json,
@@ -712,6 +713,10 @@ def run_guard(path: Path) -> GuardReport:
         # With version: "is pydantic 2.7.0 vulnerable?" → only relevant CVEs (useful)
         vuln_findings = check_vulnerabilities(dep.name, ecosystem, version=dep.version)
         report.findings.extend(vuln_findings)
+
+        # Check for typosquatting — flag names suspiciously similar to popular packages
+        typosquat_findings = check_typosquat(dep.name, ecosystem)
+        report.findings.extend(typosquat_findings)
 
         # Check license changes
         license_findings = check_license_change(dep.name, ecosystem)

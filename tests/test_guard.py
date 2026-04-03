@@ -654,10 +654,11 @@ class TestRunGuard:
     """Test the full guard pipeline end-to-end."""
 
     @patch("firsttoknow.guard.check_license_change")
+    @patch("firsttoknow.guard.check_typosquat")
     @patch("firsttoknow.guard.check_vulnerabilities")
     @patch("firsttoknow.guard.find_new_deps")
     def test_no_new_deps(
-        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_license: MagicMock, tmp_path: Path
+        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_typo: MagicMock, mock_license: MagicMock, tmp_path: Path
     ) -> None:
         """No new deps → report passes with info message."""
         mock_find.return_value = []
@@ -668,10 +669,11 @@ class TestRunGuard:
         assert "No new dependencies" in report.findings[0].title
 
     @patch("firsttoknow.guard.check_license_change")
+    @patch("firsttoknow.guard.check_typosquat")
     @patch("firsttoknow.guard.check_vulnerabilities")
     @patch("firsttoknow.guard.find_new_deps")
     def test_clean_new_dep(
-        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_license: MagicMock, tmp_path: Path
+        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_typo: MagicMock, mock_license: MagicMock, tmp_path: Path
     ) -> None:
         """New dep with no issues → report passes."""
         mock_find.return_value = [ScannedDep("flask", "3.0.0")]
@@ -680,16 +682,18 @@ class TestRunGuard:
                 package="flask", ecosystem="pypi", severity=Severity.INFO, title="flask: no known vulnerabilities"
             )
         ]
+        mock_typo.return_value = []
         mock_license.return_value = []
 
         report = run_guard(tmp_path)
         assert report.passed is True
 
     @patch("firsttoknow.guard.check_license_change")
+    @patch("firsttoknow.guard.check_typosquat")
     @patch("firsttoknow.guard.check_vulnerabilities")
     @patch("firsttoknow.guard.find_new_deps")
     def test_vulnerable_new_dep(
-        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_license: MagicMock, tmp_path: Path
+        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_typo: MagicMock, mock_license: MagicMock, tmp_path: Path
     ) -> None:
         """New dep with CVE → report fails."""
         mock_find.return_value = [ScannedDep("bad-pkg", "1.0.0")]
@@ -702,6 +706,7 @@ class TestRunGuard:
                 details="Remote code execution",
             )
         ]
+        mock_typo.return_value = []
         mock_license.return_value = []
 
         report = run_guard(tmp_path)
@@ -709,16 +714,18 @@ class TestRunGuard:
         assert report.critical_count == 1
 
     @patch("firsttoknow.guard.check_license_change")
+    @patch("firsttoknow.guard.check_typosquat")
     @patch("firsttoknow.guard.check_vulnerabilities")
     @patch("firsttoknow.guard.find_new_deps")
     def test_npm_package_detection(
-        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_license: MagicMock, tmp_path: Path
+        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_typo: MagicMock, mock_license: MagicMock, tmp_path: Path
     ) -> None:
         """Scoped npm packages (@scope/name) should be detected as npm."""
         mock_find.return_value = [ScannedDep("@babel/core", "7.0.0")]
         mock_vulns.return_value = [
             GuardFinding(package="@babel/core", ecosystem="npm", severity=Severity.INFO, title="clean")
         ]
+        mock_typo.return_value = []
         mock_license.return_value = []
 
         run_guard(tmp_path)
@@ -726,3 +733,29 @@ class TestRunGuard:
         # Should have been called with ecosystem="npm" and the version
         mock_vulns.assert_called_once_with("@babel/core", "npm", version="7.0.0")
         mock_license.assert_called_once_with("@babel/core", "npm")
+
+    @patch("firsttoknow.guard.check_license_change")
+    @patch("firsttoknow.guard.check_typosquat")
+    @patch("firsttoknow.guard.check_vulnerabilities")
+    @patch("firsttoknow.guard.find_new_deps")
+    def test_typosquat_check_called_for_new_deps(
+        self, mock_find: MagicMock, mock_vulns: MagicMock, mock_typo: MagicMock, mock_license: MagicMock, tmp_path: Path
+    ) -> None:
+        """New deps should be checked for typosquatting."""
+        mock_find.return_value = [ScannedDep("reqeusts", "1.0.0")]
+        mock_vulns.return_value = []
+        mock_typo.return_value = [
+            GuardFinding(
+                package="reqeusts",
+                ecosystem="pypi",
+                severity=Severity.WARNING,
+                title="Possible typosquat of 'requests'",
+            )
+        ]
+        mock_license.return_value = []
+
+        report = run_guard(tmp_path)
+
+        mock_typo.assert_called_once_with("reqeusts", "pypi")
+        assert report.warning_count == 1
+        assert report.passed is True  # WARNING doesn't fail the guard
